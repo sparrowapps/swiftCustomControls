@@ -8,7 +8,9 @@
 
 // 유틸리티 클래스
 
+import CoreLocation
 import Foundation
+import SystemConfiguration.CaptiveNetwork
 import UIKit
 
 class Helper {
@@ -170,5 +172,45 @@ class Helper {
         return newImage
     }
 
+    static func getWiFiSSID() -> String? {
+        var ssid: String?
+        if let interfaces = CNCopySupportedInterfaces() as NSArray? {
+            for interface in interfaces {
+                if let interfaceInfo = CNCopyCurrentNetworkInfo(interface as! CFString) as NSDictionary? {
+                    ssid = interfaceInfo[kCNNetworkInfoKeySSID as String] as? String
+                    break
+                }
+            }
+        }
+        return ssid
+    }
+
+        static func getAddressString(manager: CLLocationManager, completion: (answer: String?) -> Void) {
+        let geoCoder = CLGeocoder()
+        var addressString : String = ""
+        
+        geoCoder.reverseGeocodeLocation(manager.location!, completionHandler: {
+            (placemarks, error) -> Void in
+            var placemark:CLPlacemark!
+            
+            if error == nil {
+                if placemarks!.count > 0 {
+                    
+                    placemark = placemarks![0] as CLPlacemark
+                    
+                    if placemark.locality != nil {
+                        addressString =  placemark.locality!
+                    }
+                    if placemark.thoroughfare != nil {
+                        addressString = addressString + " " + placemark.thoroughfare!
+                    }
+                    completion(answer: addressString)
+                }
+            } else {
+                print (error)
+                completion(answer: "" )
+            }
+        })
+    }
 
 }
