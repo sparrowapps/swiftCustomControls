@@ -31,6 +31,25 @@ clss YourViewController: UIViewController, Dimmable, ActivityIndicator
 
 import UIKit
 
+extension UIViewController {
+    // view touch keyboard hide
+    func hideKeyboard()
+    {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(
+            target: self,
+            action: #selector(UIViewController.dismissKeyboard))
+        
+        view.addGestureRecognizer(tap)
+    }
+    
+    func dismissKeyboard()
+    {
+        view.endEditing(true)
+    }
+
+}
+
+
 enum Direction { case In, Out }
 
 protocol Dimmable { }
